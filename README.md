@@ -13,3 +13,24 @@ chmod +x install_yt_downloader.sh
 ```
 
 You'll get the redis url from someone who knows!
+
+# 🚀 After Deployment: How to Check Everything
+1. Check the service status:
+
+```
+sudo systemctl status yt_downloader.service
+```
+
+Should say: active (running)
+
+2. Check logs (real-time output):
+
+```
+sudo journalctl -u yt_downloader.service -f
+```
+
+3. If needed, restart the service:
+
+```
+sudo systemctl restart yt_downloader.service
+```
