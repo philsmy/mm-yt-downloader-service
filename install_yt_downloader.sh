@@ -1,17 +1,25 @@
 #!/bin/bash
 
 # Installer script for Raspberry Pi
-# This script sets up the Raspberry Pi, installs dependencies, downloads the script, and sets up the service
+# Sets up dependencies, downloads the script, and configures the systemd service
 
 set -e  # Exit on error
+
+# === CHECK FOR REDIS URL ARGUMENT ===
+if [ -z "$1" ]; then
+    echo "Usage: $0 <redis_url>"
+    echo "Example: $0 redis://user:password@host:port/db"
+    exit 1
+fi
+
+REDIS_URL="$1"  # Store Redis URL from command-line argument
 
 # === CONFIGURATION ===
 APP_DIR="/home/pi/magnetmanager"
 VENV_DIR="$APP_DIR/venv"
 SCRIPT_NAME="yt_downloader.py"
 SERVICE_NAME="yt_downloader.service"
-GITHUB_REPO="https://github.com/YOUR_USERNAME/YOUR_REPO.git"  # Replace with your actual repo
-REDIS_URL="redis://your_redis_url_here"  # Replace with the actual Redis URL
+GITHUB_REPO="https://github.com/philsmy/mm-yt-downloader-service.git"  # Replace with your actual repo
 
 # === UPDATE SYSTEM ===
 echo "Updating system packages..."
@@ -75,5 +83,4 @@ sudo systemctl start "$SERVICE_NAME"
 echo "Installation complete!"
 echo "Checking service status..."
 sudo systemctl status "$SERVICE_NAME"
-
 
