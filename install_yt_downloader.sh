@@ -15,7 +15,7 @@ fi
 REDIS_URL="$1"  # Store Redis URL from command-line argument
 
 # === CONFIGURATION ===
-APP_DIR="/home/pi/magnetmanager"
+APP_DIR="$HOME/magnetmanager"
 VENV_DIR="$APP_DIR/venv"
 SCRIPT_NAME="yt_downloader.py"
 SERVICE_NAME="yt_downloader.service"
