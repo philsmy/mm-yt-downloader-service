@@ -29,24 +29,32 @@ sudo apt update && sudo apt upgrade -y
 echo "Installing required system packages..."
 sudo apt install -y python3 python3-venv python3-pip redis git
 
-# === SETUP APPLICATION DIRECTORY ===
-echo "Setting up application directory at $APP_DIR..."
-mkdir -p "$APP_DIR"
-cd "$APP_DIR"
+# === FETCH THE SCRIPT FROM GITHUB ===
+echo "Fetching script from GitHub..."
+if [ -d "$APP_DIR" ]; then
+    # If directory exists but is not a git repo, back it up
+    if [ ! -d "$APP_DIR/.git" ]; then
+        echo "Directory exists but is not a git repository. Backing it up..."
+        mv "$APP_DIR" "${APP_DIR}_backup_$(date +%Y%m%d%H%M%S)"
+        git clone "$GITHUB_REPO" "$APP_DIR"
+    else
+        # If it's already a git repo, just pull updates
+        cd "$APP_DIR"
+        git pull origin main
+    fi
+else
+    # Directory doesn't exist, create it and clone
+    mkdir -p "$(dirname "$APP_DIR")"
+    git clone "$GITHUB_REPO" "$APP_DIR"
+fi
 
 # === SETUP PYTHON VIRTUAL ENVIRONMENT ===
 echo "Creating virtual environment..."
-python3 -m venv "$VENV_DIR"
-source "$VENV_DIR/bin/activate"
-
-# === FETCH THE SCRIPT FROM GITHUB ===
-echo "Fetching script from GitHub..."
-if [ ! -d "$APP_DIR/.git" ]; then
-    git clone "$GITHUB_REPO" "$APP_DIR"
-else
-    cd "$APP_DIR"
-    git pull origin main
+cd "$APP_DIR"
+if [ ! -d "$VENV_DIR" ]; then
+    python3 -m venv "$VENV_DIR"
 fi
+source "$VENV_DIR/bin/activate"
 
 # === INSTALL PYTHON DEPENDENCIES ===
 echo "Installing Python dependencies..."
@@ -83,4 +91,3 @@ sudo systemctl start "$SERVICE_NAME"
 echo "Installation complete!"
 echo "Checking service status..."
 sudo systemctl status "$SERVICE_NAME"
-
